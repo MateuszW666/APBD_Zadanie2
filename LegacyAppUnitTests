@@ -1,0 +1,44 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Moq;
+namespace LegacyApp.UnitTests
+{
+    [TestClass]
+    public class UserServiceTests
+    {
+        private Mock<UserCreditService> _userCreditServiceMock;
+        private UserService _userService;
+
+
+        [TestMethod]
+        public void AddUser_ShouldReturnFalse_WhenFirstNameIsEmpty()
+        {
+            var result = _userService.AddUser("", "Doe", "johndoe@example.com", new DateTime(2000, 1, 1), 1);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void AddUser_ShouldReturnFalse_WhenUnderAge()
+        {
+            var result = _userService.AddUser("John", "Doe", "johndoe@example.com", DateTime.Now, 1);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void AddUser_ShouldReturnFalse_WhenEmailIsInvalid()
+        {
+            var result = _userService.AddUser("John", "Doe", "notanemail", new DateTime(2000, 1, 1), 1);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void AddUser_ShouldReturnTrue_WhenAllCriteriaAreMet()
+        {
+        
+            _userCreditServiceMock.Setup(x => x.GetCreditLimit(It.IsAny<string>(), It.IsAny<DateTime>())).Returns(600);
+
+            var result = _userService.AddUser("John", "Doe", "johndoe@example.com", new DateTime(2000, 1, 1), 1);
+            Assert.IsTrue(result);
+        }
+    }
+}
